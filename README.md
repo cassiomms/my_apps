@@ -8,6 +8,8 @@ Intermed Commander
 
 Site da competição: http://aisandbox.com/
 
+
+
 --> Configurando o ambiente
 
 Baixar e instalar http://aisandbox.com/AiGD-TheAiSandbox-0.20.5-win32-bin.exe
@@ -27,7 +29,7 @@ Copiar a pasta da api (dentro da SDK baixada) para o /src do projeto (só para o 
 --> Rodando o projeto no AI Sandbox
 
 
-Copiar o arquivo do Intermed Commander para a pasta da SDK
+Copiar o arquivo do Intermed Commander (intermed_bot.py) para a pasta da SDK
 
 Mudar os bots no arquivo simulate.py, variável global defaults
 

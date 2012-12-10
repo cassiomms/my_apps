@@ -23,8 +23,15 @@ Nesse ponto, já é pra ter um projeto PyDev no eclipse com o Intermed Commander!
 Copiar a pasta da api (dentro da SDK baixada) para o /src do projeto (só para o eclipse não reclamar dos imports)
 
 
+
 --> Rodando o projeto no AI Sandbox
 
 
-TODO
+Copiar o arquivo do Intermed Commander para a pasta da SDK
+
+Mudar os bots no arquivo simulate.py, variável global defaults
+
+Ex: defaults = ['examples.BalancedCommander', 'intermed_bot.IntermedCommander']
+
+
 

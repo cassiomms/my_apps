@@ -10,6 +10,11 @@ from api import commands
 # effectively be considered 2D.
 from api import Vector2
 
+# To check if a object if from a specific type:
+import types
+
+# Used for sin, cos, and PI=3.14159...
+import math
 
 class IntermedCommander(Commander):
 	"""
@@ -39,20 +44,52 @@ class IntermedCommander(Commander):
 
 			candidateDist = bot.position.squaredDistance(flagPosition)
 			# Update to better candidates if needed:
-			if candidateDist < 	minDist:
+			if candidateDist < minDist:
 				minDist = candidateDist
 				closestBot = bot
 
 		# Return the bot closest to the considered flag
 		return closestBot
 			
+
+	def surroundPosition(self, bots, positionToDefend, radius, typeOfMovement = commands.Attack):
+		""" This method will issue the command to surround a particular position to a bot or a group of bots.
+		@param bots: a list containing the bots to surround the position. May be only one bot (not a list).
+		@param positionToDefend: the position to be surrounded.
+		@param radius: distance from position that the bots will to be. 
+		@param typeOfMovement: Attack, Move or Charge to positionToDefend
+		"""
+		
+		# This will make it easier to send only one bot to defend the position:
+		if not isinstance(bots, (types.ListType, types.TupleType)):
+			bots = [bots]
+	
+		# Generating positions for the bots: 
+		positions = []
+		for pos in range(len(bots)):
+			# Using the parametric equation of a circunference with center in positionToDefend:
+			x = radius * math.cos(2*math.pi*pos/len(bots)) + positionToDefend.x
+			y = radius * math.sin(2*math.pi*pos/len(bots)) + positionToDefend.y
+
+			# Finding the nearest free position in the map, if the position cannot be found we use positionToDefend:
+			candidate = self.level.findNearestFreePosition(Vector2(x,y))
+			if candidate == None: candidate = positionToDefend
+
+			positions.append(candidate)
+	
+		# Issueing the commands to the bots: 
+		i = 0
+		for bot in bots:
+			self.issue(typeOfMovement, bot, positions[i], description = str(positions[i]))
+			i = i + 1
+
 	def defaultStrategy(self):
 
 		# for all bots which aren't currently doing anything
 		for bot in self.game.bots_available:
 		
 			if bot.flag:
-			# if a bot has the flag run to the scoring location
+				# if a bot has the flag run to the scoring location
 				flagScoreLocation = self.game.team.flagScoreLocation
 				self.issue(commands.Charge, bot, flagScoreLocation, description = str(self.closestFriendToFlag(False)))
 			else:
@@ -67,6 +104,7 @@ class IntermedCommander(Commander):
 		# Issueing the bot closest to the flag:
 		#closestBot = self.closestFriendToFlag()[0]
 		#self.issue(commands.Charge, closestBot, self.game.enemyTeam.flag.position, description = 'This is SPARTA!')
+
 
 		# for all bots which aren't currently doing anything
 		for bot in self.game.bots_available:
@@ -84,13 +122,11 @@ class IntermedCommander(Commander):
 
 			else: 
 
-				if bot.position == self.game.team.flag.position:
-					self.issue(commands.Defend, descritption = 'YOU SHALL NOT PASS!!')
+				if bot.position.distance(self.game.team.flag.position) < 8 :
+					self.issue(commands.Defend, bot, description = 'YOU SHALL NOT PASS!!', facingDirection = self.game.enemyTeam.botSpawnArea[0])
 				else: 
-					self.issue(commands.Move, bot, self.game.team.flag.position, description = '\/\/\/\/')
-				
+					self.surroundPosition(self.game.bots_available, self.game.team.flag.position, 5, commands.Charge)
 
-		
 		return 
 
 
